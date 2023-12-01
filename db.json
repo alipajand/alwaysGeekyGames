@@ -1,0 +1,11 @@
+{
+  "profile": [{ "username": "alipajand", "password": "123" }],
+  "expenses": [
+    {
+      "id": 1,
+      "title": "First expense",
+      "quantity": 0,
+      "price": 10
+    }
+  ]
+}
