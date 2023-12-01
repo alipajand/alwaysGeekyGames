@@ -1,6 +1,6 @@
 type idTypes = 'username' | 'password';
 
-export interface FormField {
+export interface LoginFormField {
   id: idTypes;
   type: string;
   label: string;

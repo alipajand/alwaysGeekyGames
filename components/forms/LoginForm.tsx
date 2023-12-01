@@ -1,10 +1,10 @@
 import React from 'react';
 import { useRouter } from 'next/router';
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { loginUser } from '@/lib/api';
-import { FormField } from '@/interfaces';
+import { LoginFormField } from '@/interfaces';
 
-const formBuilder: FormField[] = [
+const formBuilder: LoginFormField[] = [
   {
     id: 'username',
     type: 'text',
@@ -27,8 +27,13 @@ const formBuilder: FormField[] = [
   }
 ];
 
+interface FormData {
+  username: string;
+  password: string;
+}
+
 export default function LoginForm() {
-  const { register, handleSubmit, formState, reset } = useForm({
+  const { register, handleSubmit, formState, reset } = useForm<FormData>({
     defaultValues: {}
   });
 
@@ -36,9 +41,9 @@ export default function LoginForm() {
 
   const { errors, isSubmitting } = formState;
 
-  const onSubmit = async (data: { username: string; password: string }) => {
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
-      const userData = await loginUser(data.username, data.password);
+      const userData = await loginUser({ username: data.username, password: data.password });
       if (userData.length > 0) {
         router.push('/expenses');
       } else {
@@ -72,6 +77,7 @@ export default function LoginForm() {
       ))}
 
       <button
+        type="submit"
         className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
         disabled={isSubmitting}
       >
