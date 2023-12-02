@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { ExpenseForm, ExpenseList, Modal } from '@/components';
+import { toast } from 'react-toastify';
+
 import { fetchExpenses } from '@/lib/api';
 import { ExpenseInterface } from '@/interfaces';
+import { ExpenseForm, ExpenseList, Modal } from '@/components';
 
 const ExpensesPage: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,7 +19,8 @@ const ExpensesPage: React.FC = () => {
       const expensesData = await fetchExpenses();
       setExpenses(expensesData);
     } catch (error) {
-      console.error('Failed to load expenses', error);
+      console.error(error);
+      toast.error('Failed to load expenses');
     } finally {
       setLoading(false);
     }
@@ -52,16 +55,16 @@ const ExpensesPage: React.FC = () => {
 
           {loading && <p>Loading...</p>}
         </div>
-
-        <Modal isOpen={isOpen} onClose={closeModal}>
-          {isOpen && (
-            <>
-              <h2 className="text-2xl font-semibold mb-6">Add Expense</h2>
-              <ExpenseForm closeModal={closeModal} onSuccess={handleAddExpense} />
-            </>
-          )}
-        </Modal>
       </div>
+
+      <Modal isOpen={isOpen} onClose={closeModal}>
+        {isOpen && (
+          <>
+            <h2 className="text-2xl font-semibold mb-6">Add Expense</h2>
+            <ExpenseForm closeModal={closeModal} onSuccess={handleAddExpense} />
+          </>
+        )}
+      </Modal>
     </div>
   );
 };

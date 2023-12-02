@@ -1,5 +1,7 @@
 import React from 'react';
+import { toast } from 'react-toastify';
 import { SubmitHandler, useForm } from 'react-hook-form';
+
 import { addExpense } from '@/lib/api';
 import { ExpenseFormField, ExpenseInterface } from '@/interfaces';
 
@@ -57,6 +59,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSuccess, closeModal }) => {
       closeModal();
       reset(res);
     } catch (error) {
+      toast.error('Failed to add new expense');
       console.error('Failed', error);
     }
   };

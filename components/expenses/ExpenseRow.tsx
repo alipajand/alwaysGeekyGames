@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { ExpenseInterface } from '@/interfaces';
+import { toast } from 'react-toastify';
+
 import { Modal } from '@/components';
 import { deleteExpense } from '@/lib/api';
+import { ExpenseInterface } from '@/interfaces';
 
 const tdClass = 'p-2 border';
 
@@ -24,7 +26,8 @@ export default function ExpenseRow({ expense, onFetch }: ExpenseRowProps) {
       if (onFetch) onFetch();
       closeModal();
     } catch (error) {
-      console.error('Failed to delete expense', error);
+      toast.error('Failed to delete this expense!');
+      console.error(error);
     } finally {
       setLoading(false);
     }

@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { loginUser } from '@/lib/api';
 import { LoginFormField } from '@/interfaces';
+import { toast } from 'react-toastify';
 
 const formBuilder: LoginFormField[] = [
   {
@@ -45,13 +46,15 @@ export default function LoginForm() {
     try {
       const userData = await loginUser({ username: data.username, password: data.password });
       if (userData.length > 0) {
+        toast.success('Welcome');
         router.push('/expenses');
       } else {
         reset();
-        console.error('Invalid username/password');
+        toast.error('Invalid username/password!');
       }
     } catch (error) {
-      console.error('Login failed', error);
+      toast.error('Login failed!');
+      console.error(error);
     }
   };
 
