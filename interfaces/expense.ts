@@ -1,9 +1,9 @@
 export interface ExpenseFormProps {
-  onSuccess: (res: ExpenseInterface) => void;
+  onSuccess: (res: ExpenseFormInterface) => void;
   closeModal: () => void;
 }
 
-export interface ExpenseInterface {
+export interface ExpenseFormInterface {
   title: string;
   id: number;
   price: number;

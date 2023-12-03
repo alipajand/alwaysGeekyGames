@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { toast } from 'react-toastify';
 
 import { fetchExpenses } from '@/lib/api';
-import { ExpenseInterface } from '@/interfaces';
+import { ExpenseFormInterface } from '@/interfaces';
 import { ExpenseForm, ExpenseList, Modal } from '@/components';
 
 const buttonStyles =
@@ -10,7 +10,7 @@ const buttonStyles =
 
 const ExpensesPage: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [expenses, setExpenses] = useState<ExpenseInterface[]>([]);
+  const [expenses, setExpenses] = useState<ExpenseFormInterface[]>([]);
   const [loading, setLoading] = useState(false);
 
   const openModal = () => setIsOpen(true);
@@ -33,7 +33,7 @@ const ExpensesPage: React.FC = () => {
     loadExpenses();
   }, [loadExpenses]);
 
-  const handleAddExpense = useCallback((newExpense: ExpenseInterface) => {
+  const handleAddExpense = useCallback((newExpense: ExpenseFormInterface) => {
     closeModal();
     setExpenses((prev) => [...prev, newExpense]);
   }, []);

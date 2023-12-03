@@ -5,7 +5,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 
 import { loginUser } from '@/lib/api';
 import { FormGenerator } from '@/components';
-import { FormFields, LoginFormData } from '@/interfaces';
+import { FormFields, LoginFormInterface } from '@/interfaces';
 
 const formBuilder: FormFields[] = [
   {
@@ -39,13 +39,13 @@ export default function LoginForm() {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset
-  } = useForm<LoginFormData>({
+  } = useForm<LoginFormInterface>({
     defaultValues: {}
   });
 
   const router = useRouter();
 
-  const onSubmit: SubmitHandler<LoginFormData> = useCallback(
+  const onSubmit: SubmitHandler<LoginFormInterface> = useCallback(
     async (data) => {
       try {
         const userData = await loginUser(data);

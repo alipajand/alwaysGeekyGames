@@ -4,7 +4,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 
 import { addExpense } from '@/lib/api';
 import { FormGenerator } from '@/components';
-import { FormFields, ExpenseInterface, ExpenseFormProps } from '@/interfaces';
+import { FormFields, ExpenseFormInterface, ExpenseFormProps } from '@/interfaces';
 
 const numberPatternValidation = {
   required: 'required',
@@ -48,11 +48,11 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSuccess, closeModal }) => {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset
-  } = useForm<ExpenseInterface>({
+  } = useForm<ExpenseFormInterface>({
     defaultValues: {}
   });
 
-  const onSubmit: SubmitHandler<ExpenseInterface> = useCallback(
+  const onSubmit: SubmitHandler<ExpenseFormInterface> = useCallback(
     async (data) => {
       try {
         const res = await addExpense(data);

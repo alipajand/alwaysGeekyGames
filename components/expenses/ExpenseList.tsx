@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ExpenseInterface } from '@/interfaces';
+import { ExpenseFormInterface } from '@/interfaces';
 import { ExpenseRow } from '@/components';
 
 const thClass = 'p-2 border';
@@ -8,7 +8,7 @@ const totalRowClass = 'text-gray-600';
 const tableHeader = ['Title', 'Quantity', 'Price', 'Total', ''];
 
 interface ExpenseListProps {
-  expenses: ExpenseInterface[];
+  expenses: ExpenseFormInterface[];
   onFetch: () => void;
 }
 
@@ -17,7 +17,7 @@ export default function ExpenseList({ onFetch, expenses }: ExpenseListProps) {
 
   useEffect(() => {
     const totalAmount = expenses.reduce(
-      (acc: number, expense: ExpenseInterface) => acc + expense.quantity * expense.price,
+      (acc: number, expense: ExpenseFormInterface) => acc + expense.quantity * expense.price,
       0
     );
     setTotal(totalAmount);
@@ -38,7 +38,7 @@ export default function ExpenseList({ onFetch, expenses }: ExpenseListProps) {
         <tbody>
           {expenses.length !== 0 ? (
             <>
-              {expenses.map((expense: ExpenseInterface) => (
+              {expenses.map((expense: ExpenseFormInterface) => (
                 <ExpenseRow key={expense.id} expense={expense} onFetch={onFetch} />
               ))}
               <tr className={totalRowClass}>

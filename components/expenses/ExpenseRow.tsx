@@ -3,12 +3,12 @@ import { toast } from 'react-toastify';
 
 import { Modal } from '@/components';
 import { deleteExpense } from '@/lib/api';
-import { ExpenseInterface } from '@/interfaces';
+import { ExpenseFormInterface } from '@/interfaces';
 
 const tdClass = 'p-2 border';
 
 interface ExpenseRowProps {
-  expense: ExpenseInterface;
+  expense: ExpenseFormInterface;
   onFetch: () => void;
 }
 
