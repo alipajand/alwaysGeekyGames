@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { toast } from 'react-toastify';
 
 import { fetchExpenses } from '@/lib/api';
 import { ExpenseInterface } from '@/interfaces';
 import { ExpenseForm, ExpenseList, Modal } from '@/components';
+
+const buttonStyles =
+  'w-28 bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300 text-sm';
 
 const ExpensesPage: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,27 +16,27 @@ const ExpensesPage: React.FC = () => {
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
 
-  const loadExpenses = async () => {
+  const loadExpenses = useCallback(async () => {
     try {
       setLoading(true);
       const expensesData = await fetchExpenses();
       setExpenses(expensesData);
     } catch (error) {
-      console.error(error);
+      console.error('ExpensesPage - loadExpenses Error:', error);
       toast.error('Failed to load expenses');
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadExpenses();
-  }, []);
+  }, [loadExpenses]);
 
-  const handleAddExpense = (newExpense: ExpenseInterface) => {
+  const handleAddExpense = useCallback((newExpense: ExpenseInterface) => {
     closeModal();
     setExpenses((prev) => [...prev, newExpense]);
-  };
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-300 py-8">
@@ -42,11 +45,7 @@ const ExpensesPage: React.FC = () => {
           <div className="flex items-center mb-6">
             <h1 className="text-2xl font-semibold px-1">Expenses</h1>
             <span className="flex-grow" />
-            <button
-              disabled={loading}
-              onClick={openModal}
-              className="w-28 bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300 text-sm"
-            >
+            <button disabled={loading} onClick={openModal} className={buttonStyles}>
               + Add
             </button>
           </div>

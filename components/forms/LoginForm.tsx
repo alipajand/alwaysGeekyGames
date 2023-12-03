@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useCallback } from 'react';
+import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { loginUser } from '@/lib/api';
-import { LoginFormField } from '@/interfaces';
-import { toast } from 'react-toastify';
 
-const formBuilder: LoginFormField[] = [
+import { loginUser } from '@/lib/api';
+import { FormGenerator } from '@/components';
+import { FormFields, LoginFormData } from '@/interfaces';
+
+const formBuilder: FormFields[] = [
   {
     id: 'username',
     type: 'text',
@@ -28,63 +30,50 @@ const formBuilder: LoginFormField[] = [
   }
 ];
 
-interface FormData {
-  username: string;
-  password: string;
-}
+const submitButtonStyles =
+  'w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300';
 
 export default function LoginForm() {
-  const { register, handleSubmit, formState, reset } = useForm<FormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset
+  } = useForm<LoginFormData>({
     defaultValues: {}
   });
 
   const router = useRouter();
 
-  const { errors, isSubmitting } = formState;
-
-  const onSubmit: SubmitHandler<FormData> = async (data) => {
-    try {
-      const userData = await loginUser({ username: data.username, password: data.password });
-      if (userData.length > 0) {
-        toast.success('Welcome to dashboard.');
-        await router.push('/expenses');
-      } else {
-        reset();
-        toast.error('Your username or password is invalid!');
+  const onSubmit: SubmitHandler<LoginFormData> = useCallback(
+    async (data) => {
+      try {
+        const userData = await loginUser(data);
+        if (userData.length > 0) {
+          toast.success('Welcome to the dashboard.');
+          await router.push('/expenses');
+        } else {
+          reset();
+          toast.error('Invalid username or password. Please try again.');
+        }
+      } catch (error) {
+        toast.error('We encountered an error. Please try again later.');
+        console.error('LoginForm - onSubmit Error:', error);
       }
-    } catch (error) {
-      toast.error('We encountered an error. Please try again later.');
-      console.error(error);
-    }
-  };
+    },
+    [router, reset]
+  );
+
+  const submitButtonLabel = isSubmitting ? 'Loading...' : 'Submit';
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      {formBuilder.map(({ id, type, label, formOptions }, index) => (
-        <div key={index} className="mb-4">
-          <label className="block text-sm font-medium text-gray-600" htmlFor={id}>
-            {label}
-          </label>
-          <input
-            id={id}
-            {...register(id, formOptions)}
-            type={type}
-            className="mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring focus:border-blue-300"
-          />
-          {errors[id] && (
-            <span className="text-sm px-1 text-red-600" role="alert">
-              {errors[id]?.message}
-            </span>
-          )}
-        </div>
+      {formBuilder.map((field, index) => (
+        <FormGenerator key={index} {...field} register={register} errors={errors} />
       ))}
 
-      <button
-        type="submit"
-        className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
-        disabled={isSubmitting}
-      >
-        {isSubmitting ? 'Loading...' : 'Submit'}
+      <button type="submit" className={submitButtonStyles} disabled={isSubmitting}>
+        {submitButtonLabel}
       </button>
     </form>
   );

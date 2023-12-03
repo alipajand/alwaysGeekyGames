@@ -1,11 +1,20 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { toast } from 'react-toastify';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
 import { addExpense } from '@/lib/api';
-import { ExpenseFormField, ExpenseInterface } from '@/interfaces';
+import { FormGenerator } from '@/components';
+import { FormFields, ExpenseInterface, ExpenseFormProps } from '@/interfaces';
 
-const formBuilder: ExpenseFormField[] = [
+const numberPatternValidation = {
+  required: 'required',
+  pattern: {
+    value: /^[0-9]*$/,
+    message: 'Entered value does not match number format'
+  }
+};
+
+const formBuilder: FormFields[] = [
   {
     id: 'title',
     type: 'text',
@@ -18,89 +27,61 @@ const formBuilder: ExpenseFormField[] = [
     id: 'quantity',
     type: 'number',
     label: 'Quantity',
-    formOptions: {
-      required: 'required',
-      pattern: {
-        value: /^[0-9]*$/,
-        message: 'Entered value does not match number format'
-      }
-    }
+    formOptions: numberPatternValidation
   },
   {
     id: 'price',
     type: 'number',
     label: 'Price',
-    formOptions: {
-      required: 'required',
-      pattern: {
-        value: /^[0-9]*$/,
-        message: 'Entered value does not match number format'
-      }
-    }
+    formOptions: numberPatternValidation
   }
 ];
 
-interface ExpenseFormProps {
-  onSuccess: (res: ExpenseInterface) => void;
-  closeModal: () => void;
-}
+const closeButtonStyles =
+  'bg-gray-100 py-2 px-8 mr-3 rounded-md hover:bg-gray-200 focus:outline-none focus:ring focus:border-blue-300';
+const submitButtonStyles =
+  'w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300';
 
 const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSuccess, closeModal }) => {
-  const { register, handleSubmit, formState, reset } = useForm<ExpenseInterface>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset
+  } = useForm<ExpenseInterface>({
     defaultValues: {}
   });
 
-  const { errors, isSubmitting } = formState;
+  const onSubmit: SubmitHandler<ExpenseInterface> = useCallback(
+    async (data) => {
+      try {
+        const res = await addExpense(data);
+        onSuccess(res);
+        closeModal();
+        reset(res);
+      } catch (error) {
+        toast.error('Failed to add a new expense. Please try again later.');
+        console.error('ExpenseForm - onSubmit Error:', error);
+      }
+    },
+    [onSuccess, closeModal, reset]
+  );
 
-  const onSubmit: SubmitHandler<ExpenseInterface> = async (data) => {
-    try {
-      const res = await addExpense(data);
-      onSuccess(res);
-      closeModal();
-      reset(res);
-    } catch (error) {
-      toast.error('Failed to add new expense');
-      console.error('Failed', error);
-    }
-  };
+  const submitButtonLabel = isSubmitting ? 'Loading...' : 'Submit';
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      {formBuilder.map(({ id, type, label, formOptions }: ExpenseFormField, index) => (
-        <div key={index} className="mb-4">
-          <label className="block text-sm font-medium text-gray-600" htmlFor={id}>
-            {label}
-          </label>
-          <input
-            id={id}
-            {...register(id, formOptions)}
-            type={type}
-            className="mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring focus:border-blue-300"
-          />
-          {errors[id] && (
-            <span className="text-sm px-1 text-red-600" role="alert">
-              {errors[id]?.message}
-            </span>
-          )}
-        </div>
+      {formBuilder.map((field, index) => (
+        <FormGenerator key={index} {...field} register={register} errors={errors} />
       ))}
 
       <div className="flex items-center mt-8">
-        <button
-          type="button"
-          className="bg-gray-100 py-2 px-8 mr-3 rounded-md hover:bg-gray-200 focus:outline-none focus:ring focus:border-blue-300"
-          disabled={isSubmitting}
-          onClick={closeModal}
-        >
+        <button type="button" className={closeButtonStyles} disabled={isSubmitting} onClick={closeModal}>
           Close
         </button>
 
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? 'Loading...' : 'Submit'}
+        <button type="submit" className={submitButtonStyles} disabled={isSubmitting}>
+          {submitButtonLabel}
         </button>
       </div>
     </form>
