@@ -46,14 +46,14 @@ export default function LoginForm() {
     try {
       const userData = await loginUser({ username: data.username, password: data.password });
       if (userData.length > 0) {
-        toast.success('Welcome');
-        router.push('/expenses');
+        toast.success('Welcome to dashboard.');
+        await router.push('/expenses');
       } else {
         reset();
-        toast.error('Invalid username/password!');
+        toast.error('Your username or password is invalid!');
       }
     } catch (error) {
-      toast.error('Login failed!');
+      toast.error('We encountered an error. Please try again later.');
       console.error(error);
     }
   };
